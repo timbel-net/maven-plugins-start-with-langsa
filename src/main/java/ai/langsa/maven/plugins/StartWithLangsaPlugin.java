@@ -18,6 +18,8 @@
  */
 package ai.langsa.maven.plugins;
 
+import static java.nio.file.Files.notExists;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,7 +30,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-@Mojo(name = "initialize", defaultPhase = LifecyclePhase.INITIALIZE)
+@Mojo(name = "initialize", defaultPhase = LifecyclePhase.VALIDATE)
 @SuppressWarnings("unused")
 public class StartWithLangsaPlugin extends AbstractMojo {
 
@@ -40,35 +42,44 @@ public class StartWithLangsaPlugin extends AbstractMojo {
     var basedir = project.getBasedir().getAbsolutePath();
     var gitDir = Paths.get(basedir, ".git");
 
-    if (Files.notExists(gitDir)) {
+    if (notExists(gitDir)) {
       getLog().warn("You are not set git yet. `git init` first!");
       return;
     }
 
     var gitTemplate = Paths.get(basedir, ".git", ".template.txt");
-    if (Files.notExists(gitTemplate)) {
+    if (notExists(gitTemplate)) {
       createGitTemplate(gitDir, gitTemplate);
       getLog().info("Generated beautiful git commit.message 🎉");
     }
 
-    var gitHookCommitMsg = Paths.get(basedir, ".git", "hooks", "commit-msg");
-    if (Files.notExists(gitHookCommitMsg)) {
-      createGitHookCommitMsg(gitHookCommitMsg);
-      getLog().info("Generated annoying git hooks(commit-msg) 🐶");
-    }
-
+    createHook("pre-commit");
+    createHook("commit-msg");
   }
 
-  private void createGitHookCommitMsg(Path gitHookCommitMsg) {
-    var hooks = this.getClass().getResource("/git-hooks-commit-msg");
-    if (hooks == null) {
+  private void createHook(String hook) {
+    var basedir = project.getBasedir().getAbsolutePath();
+    var hookTargetFile = Paths.get(basedir, ".git", "hooks", hook);
+    if (notExists(hookTargetFile)) {
+      createGitHookFile(hook, hookTargetFile);
+      getLog().info("Generated annoying git hooks(" + hook + ") 🐶");
+    }
+  }
+
+  private void createGitHookFile(String hook, Path hookFilePath) {
+    var hookSource = this.getClass().getResource("/git-hooks-" + hook);
+    if (hookSource == null) {
       return;
     }
 
-    try (var content = hooks.openStream()) {
-      Files.write(gitHookCommitMsg, content.readAllBytes());
+    try (var content = hookSource.openStream()) {
+      Files.write(hookFilePath, content.readAllBytes());
+
+      if (!hookFilePath.toFile().setExecutable(true, true)) {
+        throw new IllegalStateException(hook + " hook file does not executable permission.");
+      }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException(e);
     }
   }
 
@@ -88,7 +99,7 @@ public class StartWithLangsaPlugin extends AbstractMojo {
           gitDir.toFile()
       );
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException(e);
     }
   }
 

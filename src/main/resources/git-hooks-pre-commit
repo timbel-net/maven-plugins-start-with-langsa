@@ -1,0 +1,22 @@
+#!/bin/sh
+
+./mvnw checkstyle:check
+
+RESULTS=$?
+
+if [ $RESULTS -ne 0 ]; then
+  BG="\033[43m"
+  TX="\033[1;30m"
+  LE="\033[0m"
+
+  echo "\n\n\n"
+  echo "${BG}${TX}                                                                                        ${LE}"
+  echo "${BG}${TX}                        ☠️  체크스타일 규칙을 준수해주세요 !                            ${LE}" 
+  echo "${BG}${TX}                                                                                        ${LE} "
+  echo "\n\n\n"
+
+  exit 1
+fi
+
+echo "\e[1m\e[35m \n\n\n\n\n--- Thanks for keep the out codestyle! ---\n\n\n\n\n\e[0m"
+exit 0

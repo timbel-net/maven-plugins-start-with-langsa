@@ -6,9 +6,25 @@
 
   <groupId>ai.langsa</groupId>
   <artifactId>start-with-langsa-plugin</artifactId>
-  <version>0.1</version>
-
+  <version>0.2</version>
+  <url>https://github.com/timbel-net/maven-plugins-start-with-langsa</url>
+  <description>A maven plugin is helps starting your project.</description>
   <packaging>maven-plugin</packaging>
+  <scm>
+    <url>https://github.com/timbel-net/maven-plugins-start-with-langsa.git</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>green</name>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+    </license>
+  </licenses>
 
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
@@ -39,6 +55,30 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+            <configuration>
+              <keyname>95B9EA88</keyname>
+              <gpgArguments>
+                <arg>--batch</arg>
+                <arg>--pinentry-mode</arg>
+                <arg>loopback</arg>
+                <arg>--passphrase</arg>
+                <arg>timbel-net</arg>
+              </gpgArguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.sonatype.central</groupId>
         <artifactId>central-publishing-maven-plugin</artifactId>
