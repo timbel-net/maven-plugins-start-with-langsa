@@ -9,14 +9,14 @@ if [ $RESULTS -ne 0 ]; then
   TX="\033[1;30m"
   LE="\033[0m"
 
-  echo "\n\n\n"
+  printf "\n\n\n"
   echo "${BG}${TX}                                                                                        ${LE}"
   echo "${BG}${TX}                        ☠️  체크스타일 규칙을 준수해주세요 !                            ${LE}" 
   echo "${BG}${TX}                                                                                        ${LE} "
-  echo "\n\n\n"
+  printf "\n\n\n"
 
   exit 1
 fi
 
-echo "\e[1m\e[35m \n\n\n\n\n--- Thanks for keep the out codestyle! ---\n\n\n\n\n\e[0m"
+printf "\033[1m\033[35m \n\n\nThanks for keep the codestyle ❤️\n\n\n"
 exit 0
