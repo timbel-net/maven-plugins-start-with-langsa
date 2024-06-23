@@ -29,20 +29,40 @@ public class StartWithLangsaPlugin extends AbstractMojo {
       return;
     }
 
+    var isChangeVersion = notMatchVersion(gitDir.resolve(".version"));
     var gitTemplate = Paths.get(basedir, ".git", ".template.txt");
-    if (notExists(gitTemplate)) {
+    if (isChangeVersion || notExists(gitTemplate)) {
       createGitTemplate(gitDir, gitTemplate);
       getLog().info("Generated beautiful git commit.message 🎉");
     }
 
-    createHook("pre-commit");
-    createHook("commit-msg");
+    createHook("pre-commit", isChangeVersion);
+    createHook("commit-msg", isChangeVersion);
   }
 
-  private void createHook(String hook) {
+  private boolean notMatchVersion(Path version) {
+    try {
+      var v = Files.readString(version);
+      if (v.equals(project.getVersion())) {
+        return false;
+      }
+    } catch (IOException e) {
+      // no work
+    }
+
+    try {
+      Files.write(version, project.getVersion().getBytes());
+    } catch (IOException e) {
+      // no work
+    }
+
+    return true;
+  }
+
+  private void createHook(String hook, boolean isChangeVersion) {
     var basedir = project.getBasedir().getAbsolutePath();
     var hookTargetFile = Paths.get(basedir, ".git", "hooks", hook);
-    if (notExists(hookTargetFile)) {
+    if (isChangeVersion || notExists(hookTargetFile)) {
       createGitHookFile(hook, hookTargetFile);
       getLog().info("Generated annoying git hooks(" + hook + ") 🐶");
     }
@@ -76,7 +96,7 @@ public class StartWithLangsaPlugin extends AbstractMojo {
 
       var runtime = Runtime.getRuntime();
       runtime.exec(
-          new String[]{"git", "config", "commit.template", ".git/.template.txt"},
+        new String[]{"git", "config", "commit.template", ".git/.template.txt"},
           null,
           gitDir.toFile()
       );

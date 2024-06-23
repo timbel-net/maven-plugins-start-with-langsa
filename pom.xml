@@ -6,7 +6,7 @@
 
   <groupId>ai.langsa</groupId>
   <artifactId>start-with-langsa-plugin</artifactId>
-  <version>0.5</version>
+  <version>0.6</version>
   <url>https://github.com/timbel-net/maven-plugins-start-with-langsa</url>
   <description>A maven plugin is helps starting your project.</description>
   <packaging>maven-plugin</packaging>
@@ -48,13 +48,18 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
-      <version>3.2.5</version>
+      <version>3.9.8</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>ai.langsa</groupId>
+        <artifactId>start-with-langsa-plugin</artifactId>
+        <version>0.6</version>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
@@ -119,4 +124,11 @@
       </plugin>
     </plugins>
   </build>
+  <repositories>
+    <repository>
+      <id>maven_central</id>
+      <name>Maven Central</name>
+      <url>https://repo.maven.apache.org/maven2/</url>
+    </repository>
+  </repositories>
 </project>
