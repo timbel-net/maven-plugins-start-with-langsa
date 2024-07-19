@@ -3,7 +3,7 @@
 echo "    ✅ 커밋 규칙을 검사합니다. "
 
 unset JAVA_TOOL_OPTIONS
-./mvnw.cmd -Dfile.encoding=utf-8 checkstyle:check | grep -E "(^\[ERROR].+\..+:[0-9]+:[0-9]+.+$)|(^\[INFO] BUILD FAILURE$)"
+./mvnw.cmd -Dfile.encoding=utf-8 checkstyle:check | grep -E "(^\[ERROR].+\..+:[0-9]+:.+$)|(^\[INFO] BUILD FAILURE$)"
 
 
 RESULTS=$?
