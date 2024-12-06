@@ -22,22 +22,20 @@ public class StartWithLangsaPlugin extends AbstractMojo {
   @Override
   public void execute() {
     var basedir = project.getBasedir().getAbsolutePath();
-    var gitDir = Paths.get(basedir, ".git");
+    try {
+      var gitDir = Paths.get(basedir, ".git");
+      var isChangeVersion = notMatchVersion(gitDir.resolve(".version"));
+      var gitTemplate = Paths.get(basedir, ".git", ".template.txt");
+      if (isChangeVersion || notExists(gitTemplate)) {
+        createGitTemplate(gitDir, gitTemplate);
+        getLog().info("Generated beautiful git commit.message 🎉");
+      }
 
-    if (notExists(gitDir)) {
+      createHook("pre-commit", isChangeVersion);
+      createHook("commit-msg", isChangeVersion);
+    } catch (Exception e) {
       getLog().warn("You are not set git yet. `git init` first!");
-      return;
     }
-
-    var isChangeVersion = notMatchVersion(gitDir.resolve(".version"));
-    var gitTemplate = Paths.get(basedir, ".git", ".template.txt");
-    if (isChangeVersion || notExists(gitTemplate)) {
-      createGitTemplate(gitDir, gitTemplate);
-      getLog().info("Generated beautiful git commit.message 🎉");
-    }
-
-    createHook("pre-commit", isChangeVersion);
-    createHook("commit-msg", isChangeVersion);
   }
 
   private boolean notMatchVersion(Path version) {
@@ -95,11 +93,8 @@ public class StartWithLangsaPlugin extends AbstractMojo {
       Files.write(gitTemplate, content.readAllBytes());
 
       var runtime = Runtime.getRuntime();
-      runtime.exec(
-        new String[]{"git", "config", "commit.template", ".git/.template.txt"},
-          null,
-          gitDir.toFile()
-      );
+      runtime.exec(new String[]{"git", "config", "commit.template", ".git/.template.txt"}, null,
+        gitDir.toFile());
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }

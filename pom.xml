@@ -6,7 +6,7 @@
 
   <groupId>ai.langsa</groupId>
   <artifactId>start-with-langsa-plugin</artifactId>
-  <version>0.9</version>
+  <version>0.9.1</version>
   <url>https://github.com/timbel-net/maven-plugins-start-with-langsa</url>
   <description>A maven plugin is helps starting your project.</description>
   <packaging>maven-plugin</packaging>
@@ -17,6 +17,9 @@
   <developers>
     <developer>
       <name>green</name>
+    </developer>
+    <developer>
+      <name>dycho</name>
     </developer>
   </developers>
 
